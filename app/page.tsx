@@ -134,7 +134,6 @@ export default function Home() {
               {[
                 {
                   icon: <Search className="w-8 h-8" />,
-                  number: "1",
                   title: "Masukkan Nomor Resi",
                   description: "Salin nomor resi dari email/sms kurir",
                   color: "from-blue-500 to-blue-600",
@@ -142,7 +141,6 @@ export default function Home() {
                 },
                 {
                   icon: <Package className="w-8 h-8" />,
-                  number: "2",
                   title: "Pilih Kurir",
                   description: "Pilih kurir pengirim sesuai dengan resi Anda",
                   color: "from-orange-500 to-orange-600",
@@ -150,7 +148,6 @@ export default function Home() {
                 },
                 {
                   icon: <MapPin className="w-8 h-8" />,
-                  number: "3",
                   title: "Lihat Hasil",
                   description: "Dapatkan informasi status pengiriman terbaru",
                   color: "from-blue-500 to-orange-500",
@@ -159,17 +156,6 @@ export default function Home() {
               ].map((step, index) => (
                 <div key={index} className="group relative">
                   <div className="relative p-8 rounded-3xl bg-gradient-to-b from-white to-blue-50/50 border border-blue-100 shadow-sm hover:shadow-2xl transition-all duration-500 hover:border-blue-300 hover:-translate-y-2">
-                    {/* Number Badge - Sekarang di dalam box di posisi atas kiri */}
-                    <div className="flex justify-start mb-6">
-                      <div
-                        className={`w-12 h-12 rounded-xl ${step.bgColor} flex items-center justify-center shadow-lg`}
-                      >
-                        <span className="text-2xl font-bold text-white">
-                          {step.number}
-                        </span>
-                      </div>
-                    </div>
-
                     {/* Icon */}
                     <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-inner">
                       <div

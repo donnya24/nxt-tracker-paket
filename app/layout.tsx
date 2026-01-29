@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Package Tracker - Lacak Paket Anda",
+  title: "Paket Tracker-Lacak Paket Anda",
   description: "Lacak status pengiriman paket dari berbagai kurir Indonesia",
 };
 
