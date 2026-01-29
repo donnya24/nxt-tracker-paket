@@ -1,7 +1,10 @@
+// components/tracker/TrackingForm.tsx
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CourierSelect from "./CourierSelect";
+import LazyImage from "@/components/ui/LazyImage";
+import { ALL_COURIERS } from "@/data/couriers"; // Impor dari data pusat
 
 interface TrackingFormProps {
   onSubmit: (courier: string, trackingNumber: string) => void;
@@ -14,10 +17,32 @@ export default function TrackingForm({
 }: TrackingFormProps) {
   const [courier, setCourier] = useState("jne");
   const [trackingNumber, setTrackingNumber] = useState("");
+  const [recentCouriers, setRecentCouriers] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("recent_couriers");
+      if (saved) {
+        setRecentCouriers(JSON.parse(saved));
+      }
+    }
+  }, []);
+
+  const saveRecentCourier = (courierCode: string) => {
+    const updated = [
+      courierCode,
+      ...recentCouriers.filter((c) => c !== courierCode),
+    ].slice(0, 3);
+    setRecentCouriers(updated);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("recent_couriers", JSON.stringify(updated));
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (trackingNumber.trim() && courier) {
+      saveRecentCourier(courier);
       onSubmit(courier, trackingNumber.trim());
     }
   };
@@ -25,6 +50,47 @@ export default function TrackingForm({
   return (
     <div className="bg-white rounded-xl shadow-lg p-6">
       <h2 className="text-2xl font-bold text-gray-800 mb-6">Lacak Paket</h2>
+
+      {recentCouriers.length > 0 && (
+        <div className="mb-6">
+          <p className="text-sm text-gray-600 mb-2">
+            Kurir terakhir digunakan:
+          </p>
+          <div className="flex space-x-2">
+            {recentCouriers.map((recentCourier) => {
+              const courierData = ALL_COURIERS.find(
+                (c) => c.value === recentCourier,
+              ); // Gunakan ALL_COURIERS
+              return (
+                <button
+                  key={recentCourier}
+                  type="button"
+                  onClick={() => setCourier(recentCourier)}
+                  className={`flex items-center px-3 py-1 rounded-lg text-sm ${
+                    courier === recentCourier
+                      ? "bg-blue-100 text-blue-700 border border-blue-300"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+                >
+                  {courierData && (
+                    <div className="mr-2 flex-shrink-0">
+                      <LazyImage
+                        src={courierData.logoUrl}
+                        alt={courierData.value}
+                        size="w-6 h-6"
+                        fallbackColor={courierData.color}
+                      />
+                    </div>
+                  )}
+                  {courierData
+                    ? courierData.label
+                    : recentCourier.toUpperCase()}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
@@ -35,14 +101,23 @@ export default function TrackingForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Nomor Resi / Tracking
-          </label>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Nomor Resi / Tracking
+            </label>
+            <button
+              type="button"
+              onClick={() => setTrackingNumber("1234567890")}
+              className="text-xs text-blue-600 hover:text-blue-800"
+            >
+              Isi contoh
+            </button>
+          </div>
           <input
             type="text"
             value={trackingNumber}
             onChange={(e) => setTrackingNumber(e.target.value)}
-            placeholder="Contoh: 1234567890"
+            placeholder="Contoh: SPX123456789"
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
             required
           />
@@ -54,7 +129,7 @@ export default function TrackingForm({
         <button
           type="submit"
           disabled={isLoading || !trackingNumber.trim()}
-          className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition"
+          className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg"
         >
           {isLoading ? (
             <span className="flex items-center justify-center">

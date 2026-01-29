@@ -1,119 +1,153 @@
 import React from "react";
 import Link from "next/link";
+import { Package, MapPin, Shield, TrendingUp } from "lucide-react";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const totalCouriers = 25;
+
+  const features = [
+    { icon: <Package size={20} />, text: "Pelacakan Real-time" },
+    { icon: <MapPin size={20} />, text: "Update Lokasi" },
+    { icon: <Shield size={20} />, text: "Aman & Terpercaya" },
+    { icon: <TrendingUp size={20} />, text: "Akurasi Tinggi" },
+  ];
+
+  const popularCouriers = [
+    "JNE",
+    "POS",
+    "J&T",
+    "TIKI",
+    "SiCepat",
+    "AnterAja",
+    "SPX",
+    "Ninja",
+  ];
 
   return (
-    <footer className="bg-gray-900 text-white mt-auto">
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div>
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                <span className="font-bold">📦</span>
+    <footer className="bg-gradient-to-b from-white to-blue-50 border-t border-blue-100 mt-20">
+      {/* Features */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+          {features.map((feature, index) => (
+            <div
+              key={index}
+              className="flex flex-col items-center text-center p-4 rounded-2xl bg-white/50 backdrop-blur-sm border border-blue-100 hover:border-blue-300 transition-all duration-300 hover:shadow-lg"
+            >
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-100 to-orange-100 flex items-center justify-center mb-3 text-blue-600">
+                {feature.icon}
               </div>
-              <h2 className="text-xl font-bold">PaketTracker</h2>
+              <p className="font-medium text-gray-800">{feature.text}</p>
             </div>
-            <p className="text-gray-400 text-sm">
-              Platform pelacakan paket terpercaya untuk berbagai kurir di
-              Indonesia.
+          ))}
+        </div>
+
+        {/* Main Footer */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          {/* Brand */}
+          <div className="space-y-4">
+            <div className="flex items-center space-x-3">
+              <div className="relative">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-600 via-blue-500 to-orange-400 rounded-xl flex items-center justify-center shadow-lg">
+                  <span className="text-white font-bold text-lg">📦</span>
+                </div>
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-400 rounded-full border-2 border-white"></div>
+              </div>
+              <div>
+                <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
+                  PaketTracker
+                </h2>
+                <p className="text-xs text-gray-500 font-medium">
+                  Lacak dengan presisi
+                </p>
+              </div>
+            </div>
+            <p className="text-sm text-gray-600 leading-relaxed">
+              Platform pelacakan paket terintegrasi untuk {totalCouriers}+ kurir
+              di Indonesia. Gratis, cepat, dan selalu update.
             </p>
           </div>
 
+          {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Layanan</h3>
-            <ul className="space-y-2 text-gray-400">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <span className="w-2 h-6 bg-gradient-to-b from-blue-600 to-orange-400 rounded-full mr-2"></span>
+              Menu Utama
+            </h3>
+            <ul className="space-y-3">
               <li>
-                <Link href="/tracker" className="hover:text-white">
+                <Link
+                  href="/"
+                  className="flex items-center text-gray-600 hover:text-blue-600 transition-colors group"
+                >
+                  <span className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-2 group-hover:scale-125 transition-transform"></span>
+                  Beranda
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/tracker"
+                  className="flex items-center text-gray-600 hover:text-blue-600 transition-colors group"
+                >
+                  <span className="w-1.5 h-1.5 bg-orange-400 rounded-full mr-2 group-hover:scale-125 transition-transform"></span>
                   Lacak Paket
                 </Link>
               </li>
-              <li>
-                <Link href="/couriers" className="hover:text-white">
-                  Daftar Kurir
-                </Link>
-              </li>
-              <li>
-                <Link href="/faq" className="hover:text-white">
-                  FAQ
-                </Link>
-              </li>
-              <li>
-                <Link href="/help" className="hover:text-white">
-                  Bantuan
-                </Link>
-              </li>
             </ul>
           </div>
 
+          {/* Popular Couriers */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Perusahaan</h3>
-            <ul className="space-y-2 text-gray-400">
-              <li>
-                <Link href="/about" className="hover:text-white">
-                  Tentang Kami
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="hover:text-white">
-                  Kontak
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy" className="hover:text-white">
-                  Kebijakan Privasi
-                </Link>
-              </li>
-              <li>
-                <Link href="/terms" className="hover:text-white">
-                  Syarat & Ketentuan
-                </Link>
-              </li>
-            </ul>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <span className="w-2 h-6 bg-gradient-to-b from-blue-600 to-orange-400 rounded-full mr-2"></span>
+              Kurir Populer
+            </h3>
+            <div className="grid grid-cols-2 gap-2">
+              {popularCouriers.map((courier, index) => (
+                <div
+                  key={courier}
+                  className="p-2 bg-gradient-to-r from-blue-50 to-orange-50 rounded-lg border border-blue-100 hover:border-blue-300 transition-all duration-300 hover:scale-105"
+                >
+                  <p className="text-sm font-medium text-gray-800 text-center">
+                    {courier}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
 
+          {/* Stats */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Kontak</h3>
-            <ul className="space-y-2 text-gray-400">
-              <li className="flex items-center space-x-2">
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                  />
-                </svg>
-                <span>info@pakektracker.com</span>
-              </li>
-              <li className="flex items-center space-x-2">
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                  />
-                </svg>
-                <span>+62 21 1234 5678</span>
-              </li>
-            </ul>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <span className="w-2 h-6 bg-gradient-to-b from-blue-600 to-orange-400 rounded-full mr-2"></span>
+              Statistik
+            </h3>
+            <div className="space-y-4">
+              <div className="p-4 rounded-xl bg-gradient-to-br from-blue-500/10 to-orange-500/10 border border-blue-200">
+                <p className="text-2xl font-bold text-blue-600">
+                  {totalCouriers}+
+                </p>
+                <p className="text-sm text-gray-600">Kurir Didukung</p>
+              </div>
+              <div className="p-4 rounded-xl bg-gradient-to-br from-orange-500/10 to-blue-500/10 border border-orange-200">
+                <p className="text-2xl font-bold text-orange-600">24/7</p>
+                <p className="text-sm text-gray-600">Update Data</p>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-8 pt-6 text-center text-gray-500 text-sm">
-          <p>&copy; {currentYear} PaketTracker. All rights reserved.</p>
+        {/* Copyright */}
+        <div className="mt-12 pt-8 border-t border-blue-100 text-center">
+          <p className="text-gray-600 text-sm">
+            &copy; {currentYear}{" "}
+            <span className="font-semibold text-blue-600">PaketTracker</span>.
+            Semua hak dilindungi.
+          </p>
+          <p className="text-xs text-gray-500 mt-2">
+            Data diperoleh dari API BinderByte • Terintegrasi dengan sistem
+            kurir terpercaya
+          </p>
         </div>
       </div>
     </footer>
