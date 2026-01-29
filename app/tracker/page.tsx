@@ -72,7 +72,23 @@ export default function TrackerPage() {
       }
 
       if (data.status === 200) {
-        setTrackingResult(data.data);
+        // PERBAIKAN: Mapping data yang lengkap untuk TrackingResult
+        setTrackingResult({
+          courier: data.data.summary?.courier || "",
+          trackingNumber: data.data.summary?.awb || "",
+          status: data.data.summary?.status || "",
+          details:
+            data.data.history?.map((h: any) => ({
+              date: h.date,
+              desc: h.desc,
+            })) || [],
+          sender: data.data.detail?.shipper || "Tidak tersedia",
+          receiver: data.data.detail?.receiver || "Tidak tersedia",
+          origin: data.data.detail?.origin || "Tidak tersedia",
+          destination: data.data.detail?.destination || "Tidak tersedia",
+          weight: data.data.summary?.weight || "Tidak tersedia",
+          service: data.data.summary?.service || "Tidak tersedia",
+        });
         setError(null);
       } else {
         // Handle jika API BinderByte return error
@@ -172,24 +188,9 @@ export default function TrackerPage() {
 
               {/* Result */}
               <div className="mb-8">
+                {/* PERBAIKAN: TrackingResult sekarang menerima data langsung dari state trackingResult */}
                 <TrackingResult
-                  data={
-                    trackingResult
-                      ? {
-                          courier: trackingResult.summary?.courier || "",
-                          trackingNumber: trackingResult.summary?.awb || "",
-                          status: trackingResult.summary?.status || "",
-                          details:
-                            trackingResult.history?.map((h: any) => ({
-                              date: h.date,
-                              desc: h.desc,
-                            })) || [],
-                          sender: trackingResult.detail?.shipper,
-                          receiver: trackingResult.detail?.receiver,
-                          weight: trackingResult.summary?.weight,
-                        }
-                      : null
-                  }
+                  data={trackingResult} // Kirim data langsung tanpa mapping ulang
                   isLoading={isLoading}
                   error={error}
                 />

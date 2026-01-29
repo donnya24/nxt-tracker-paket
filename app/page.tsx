@@ -118,66 +118,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Features */}
-        <section className="py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                Cara Melacak Paket
-              </h2>
-              <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-                Hanya 3 langkah mudah untuk mengetahui status paket Anda
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
-              {[
-                {
-                  icon: <Search className="w-8 h-8" />,
-                  title: "Masukkan Nomor Resi",
-                  description: "Salin nomor resi dari email/sms kurir",
-                  color: "from-blue-500 to-blue-600",
-                  bgColor: "bg-gradient-to-br from-blue-500 to-blue-600",
-                },
-                {
-                  icon: <Package className="w-8 h-8" />,
-                  title: "Pilih Kurir",
-                  description: "Pilih kurir pengirim sesuai dengan resi Anda",
-                  color: "from-orange-500 to-orange-600",
-                  bgColor: "bg-gradient-to-br from-orange-500 to-orange-600",
-                },
-                {
-                  icon: <MapPin className="w-8 h-8" />,
-                  title: "Lihat Hasil",
-                  description: "Dapatkan informasi status pengiriman terbaru",
-                  color: "from-blue-500 to-orange-500",
-                  bgColor: "bg-gradient-to-br from-blue-500 to-orange-500",
-                },
-              ].map((step, index) => (
-                <div key={index} className="group relative">
-                  <div className="relative p-8 rounded-3xl bg-gradient-to-b from-white to-blue-50/50 border border-blue-100 shadow-sm hover:shadow-2xl transition-all duration-500 hover:border-blue-300 hover:-translate-y-2">
-                    {/* Icon */}
-                    <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-inner">
-                      <div
-                        className={`text-transparent bg-gradient-to-br ${step.color} bg-clip-text`}
-                      >
-                        {step.icon}
-                      </div>
-                    </div>
-
-                    {/* Content */}
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3 text-center">
-                      {step.title}
-                    </h3>
-                    <p className="text-gray-600 text-center leading-relaxed">
-                      {step.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
 
         {/* Supported Couriers */}
         <section className="py-20 bg-gradient-to-b from-blue-50/30 to-white">

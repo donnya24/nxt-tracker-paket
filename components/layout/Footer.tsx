@@ -44,18 +44,20 @@ export default function Footer() {
 
         {/* Main Footer */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Brand */}
+          {/* Brand - Logo sama dengan Header */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
               <div className="relative">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-600 via-blue-500 to-orange-400 rounded-xl flex items-center justify-center shadow-lg">
-                  <span className="text-white font-bold text-lg">📦</span>
+                {/* Container untuk logo - sama dengan Header */}
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 via-blue-500 to-orange-400 rounded-xl flex items-center justify-center shadow-lg">
+                  {/* Logo dengan Lucide Package icon - sama dengan Header */}
+                  <Package className="w-6 h-6 text-white" strokeWidth={2.5} />
                 </div>
                 <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-400 rounded-full border-2 border-white"></div>
               </div>
               <div>
                 <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
-                  PaketTracker
+                  Paket Tracker
                 </h2>
                 <p className="text-xs text-gray-500 font-medium">
                   Lacak dengan presisi
@@ -141,11 +143,11 @@ export default function Footer() {
         <div className="mt-12 pt-8 border-t border-blue-100 text-center">
           <p className="text-gray-600 text-sm">
             &copy; {currentYear}{" "}
-            <span className="font-semibold text-blue-600">PaketTracker</span>.
+            <span className="font-semibold text-blue-600">Paket Tracker</span>.
             Semua hak dilindungi.
           </p>
           <p className="text-xs text-gray-500 mt-2">
-            Data diperoleh dari API BinderByte • Terintegrasi dengan sistem
+            Pelacakan Realtime • Terintegrasi dengan sistem
             kurir terpercaya
           </p>
         </div>

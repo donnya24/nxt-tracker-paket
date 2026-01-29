@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import React, { useState } from "react";
 import Link from "next/link";
@@ -14,17 +14,17 @@ export default function Header() {
           {/* Logo */}
           <div className="flex items-center space-x-3">
             <div className="relative">
-              {/* Container untuk logo */}
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 via-blue-500 to-orange-400 rounded-xl flex items-center justify-center shadow-lg">
-                {/* Logo dengan Lucide Package icon - ukuran pas */}
-                <Package className="w-5 h-5 text-white" strokeWidth={2} />
+              {/* Container untuk logo - diperbesar */}
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 via-blue-500 to-orange-400 rounded-xl flex items-center justify-center shadow-lg">
+                {/* Logo dengan Lucide Package icon - ukuran diperbesar */}
+                <Package className="w-6 h-6 text-white" strokeWidth={2.5} />
               </div>
               <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-400 rounded-full border-2 border-white"></div>
             </div>
             <div>
               <Link
                 href="/"
-                className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent"
+                className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent"
               >
                 Paket Tracker
               </Link>

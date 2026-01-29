@@ -8,13 +8,32 @@ interface TrackingRequest {
 // Di bagian atas file, update VALID_COURIERS:
 const VALID_COURIERS = [
   // Populer
-  'jne', 'tiki', 'pos', 'jnt', 'sicepat', 'anteraja', 'wahana', 'ninja', 'lion',
+  "jne",
+  "tiki",
+  "pos",
+  "jnt",
+  "sicepat",
+  "anteraja",
+  "wahana",
+  "ninja",
+  "lion",
   // Express
-  'rex', 'ide', 'spx', 'jet', 'pcp', 'jxe',
+  "rex",
+  "ide",
+  "spx",
+  "jet",
+  "pcp",
+  "jxe",
   // Cargo
-  'jntcargo', 'indah', 'dakota',
+  "jntcargo",
+  "indah",
+  "dakota",
   // E-commerce
-  'shopeexpress', 'kgx', 'sap', 'rpx', 'lazada', 'first'
+  "kgx",
+  "sap",
+  "rpx",
+  "lazada",
+  "first",
 ];
 
 // Rate limiting
@@ -22,11 +41,58 @@ const rateLimit = new Map<string, { count: number; resetTime: number }>();
 const RATE_LIMIT = 30;
 const RATE_LIMIT_WINDOW = 60 * 1000;
 
+// Fungsi untuk mengubah error message menjadi user-friendly
+const getFriendlyErrorMessage = (
+  errorType: string,
+  details?: string,
+): string => {
+  switch (errorType) {
+    case "RATE_LIMIT":
+      return "Terlalu banyak permintaan. Silakan tunggu beberapa saat dan coba lagi.";
+
+    case "MISSING_FIELDS":
+      return "Nomor resi dan kurir wajib diisi.";
+
+    case "INVALID_WAYBILL_SHORT":
+      return "Nomor resi terlalu pendek. Minimal 5 karakter.";
+
+    case "INVALID_WAYBILL_LONG":
+      return "Nomor resi terlalu panjang. Maksimal 50 karakter.";
+
+    case "INVALID_COURIER":
+      return "Kurir yang dipilih tidak didukung.";
+
+    case "API_KEY_MISSING":
+      return "Sistem sedang dalam pemeliharaan. Silakan coba lagi nanti.";
+
+    case "API_TIMEOUT":
+      return "Waktu pencarian habis. Silakan coba lagi.";
+
+    case "API_NOT_FOUND":
+      return "Nomor resi tidak ditemukan dalam sistem kurir.";
+
+    case "API_BAD_REQUEST":
+      return "Format nomor resi atau kurir tidak valid.";
+
+    case "API_ERROR":
+      return `Gagal menghubungi sistem kurir: ${details || "Silakan coba lagi."}`;
+
+    case "SERVER_ERROR":
+      return "Terjadi kesalahan pada server. Silakan coba beberapa saat lagi.";
+
+    default:
+      return "Terjadi kesalahan. Silakan coba lagi.";
+  }
+};
+
 export async function POST(request: NextRequest) {
   try {
-    // Rate limiting
+    // Rate limiting dengan IP detection yang lebih baik
     const forwardedFor = request.headers.get("x-forwarded-for");
-    const ip = forwardedFor ? forwardedFor.split(",")[0] : "unknown";
+    const realIp = request.headers.get("x-real-ip");
+    const ip = forwardedFor
+      ? forwardedFor.split(",")[0].trim()
+      : realIp || "unknown";
 
     const now = Date.now();
     const userRate = rateLimit.get(ip);
@@ -38,7 +104,8 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           {
             status: 429,
-            message: "Terlalu banyak permintaan. Silakan coba lagi nanti.",
+            success: false,
+            message: getFriendlyErrorMessage("RATE_LIMIT"),
             data: null,
           },
           { status: 429 },
@@ -52,7 +119,21 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse request body
-    const body: TrackingRequest = await request.json();
+    let body: TrackingRequest;
+    try {
+      body = await request.json();
+    } catch (parseError) {
+      return NextResponse.json(
+        {
+          status: 400,
+          success: false,
+          message: "Format permintaan tidak valid.",
+          data: null,
+        },
+        { status: 400 },
+      );
+    }
+
     const { waybill, courier } = body;
 
     // Validation
@@ -60,7 +141,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           status: 400,
-          message: "Nomor resi dan kurir harus diisi",
+          success: false,
+          message: getFriendlyErrorMessage("MISSING_FIELDS"),
           data: null,
         },
         { status: 400 },
@@ -73,7 +155,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           status: 400,
-          message: "Nomor resi terlalu pendek. Minimal 5 karakter",
+          success: false,
+          message: getFriendlyErrorMessage("INVALID_WAYBILL_SHORT"),
           data: null,
         },
         { status: 400 },
@@ -84,7 +167,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           status: 400,
-          message: "Nomor resi terlalu panjang. Maksimal 50 karakter",
+          success: false,
+          message: getFriendlyErrorMessage("INVALID_WAYBILL_LONG"),
           data: null,
         },
         { status: 400 },
@@ -92,11 +176,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Validasi kurir
-    if (!VALID_COURIERS.includes(courier.toLowerCase())) {
+    const lowerCourier = courier.toLowerCase();
+    if (!VALID_COURIERS.includes(lowerCourier)) {
       return NextResponse.json(
         {
           status: 400,
-          message: "Kurir tidak didukung",
+          success: false,
+          message: getFriendlyErrorMessage("INVALID_COURIER"),
           data: null,
         },
         { status: 400 },
@@ -104,15 +190,18 @@ export async function POST(request: NextRequest) {
     }
 
     // API Key
-    const apiKey = process.env.NEXT_PUBLIC_BINDERBYTE_API_KEY;
-    const baseUrl =
-      process.env.NEXT_PUBLIC_BINDERBYTE_BASE_URL ||
-      "https://api.binderbyte.com/v1";
+    const apiKey =
+      process.env.BINDERBYTE_API_KEY ||
+      process.env.NEXT_PUBLIC_BINDERBYTE_API_KEY;
 
     // Jika API key tidak ada atau demo mode, gunakan mock data
-    if (!apiKey || apiKey === "your_api_key_here") {
+    if (!apiKey || apiKey === "your_api_key_here" || apiKey === "demo") {
       const mockData = getMockTrackingData(trimmedWaybill, courier);
-      return NextResponse.json(mockData);
+      return NextResponse.json({
+        ...mockData,
+        success: true,
+        note: "Data demo - Gunakan API key asli untuk data real-time",
+      });
     }
 
     // Call BinderByte API dengan timeout
@@ -122,56 +211,70 @@ export async function POST(request: NextRequest) {
     try {
       const params = new URLSearchParams({
         api_key: apiKey,
-        courier: courier.toLowerCase(),
+        courier: lowerCourier,
         awb: trimmedWaybill,
       });
 
-      const response = await fetch(`${baseUrl}/track?${params}`, {
-        headers: {
-          Accept: "application/json",
+      const response = await fetch(
+        `https://api.binderbyte.com/v1/track?${params}`,
+        {
+          headers: {
+            Accept: "application/json",
+            "User-Agent": "PackageTracker/1.0",
+          },
+          signal: controller.signal,
+          cache: "no-store",
         },
-        signal: controller.signal,
-      });
+      );
 
       clearTimeout(timeoutId);
 
+      const data = await response.json();
+
       if (!response.ok) {
+        let errorType = "API_ERROR";
+        let errorDetails = response.statusText;
+
         if (response.status === 404) {
-          return NextResponse.json(
-            {
-              status: 404,
-              message: "Nomor resi tidak ditemukan",
-              data: null,
-            },
-            { status: 404 },
-          );
+          errorType = "API_NOT_FOUND";
+          errorDetails = "Data tidak ditemukan";
+        } else if (response.status === 400) {
+          errorType = "API_BAD_REQUEST";
+        } else if (response.status === 429) {
+          errorType = "RATE_LIMIT";
         }
 
         return NextResponse.json(
           {
             status: response.status,
-            message: `Error dari API kurir: ${response.statusText}`,
+            success: false,
+            message: getFriendlyErrorMessage(errorType, errorDetails),
             data: null,
           },
           { status: response.status },
         );
       }
 
-      const data = await response.json();
-
-      // Handle jika BinderByte return error
-      if (data.status && data.status !== 200) {
+      // Handle jika BinderByte return error dalam response body
+      if (data.status && data.status !== 200 && data.status !== "success") {
         return NextResponse.json(
           {
             status: 400,
-            message: data.message || "Data tracking tidak ditemukan",
+            success: false,
+            message: data.message || getFriendlyErrorMessage("API_NOT_FOUND"),
             data: null,
           },
           { status: 400 },
         );
       }
 
-      return NextResponse.json(data);
+      // Format response yang konsisten
+      return NextResponse.json({
+        status: 200,
+        success: true,
+        message: "Berhasil mendapatkan data tracking",
+        data: data.data || data,
+      });
     } catch (fetchError: any) {
       clearTimeout(timeoutId);
 
@@ -179,7 +282,8 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           {
             status: 408,
-            message: "Timeout menghubungi server kurir",
+            success: false,
+            message: getFriendlyErrorMessage("API_TIMEOUT"),
             data: null,
           },
           { status: 408 },
@@ -194,7 +298,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         status: 500,
-        message: "Terjadi kesalahan pada server. Silakan coba lagi nanti.",
+        success: false,
+        message: getFriendlyErrorMessage("SERVER_ERROR"),
         data: null,
       },
       { status: 500 },
@@ -206,55 +311,92 @@ export async function GET() {
   return NextResponse.json({
     name: "Package Tracker API",
     version: "1.0.0",
-    supported_couriers: VALID_COURIERS,
+    description: "API untuk melacak paket dari berbagai kurir Indonesia",
+    supported_couriers: VALID_COURIERS.map((c) => c.toUpperCase()),
     timestamp: new Date().toISOString(),
+    endpoints: {
+      track: "POST /api/track",
+      status: "GET /api/track",
+    },
   });
 }
 
-// Mock data function
+// Mock data function yang lebih baik
 function getMockTrackingData(waybill: string, courier: string) {
+  const now = new Date();
+  const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  const twoDaysAgo = new Date(now.getTime() - 48 * 60 * 60 * 1000);
+
+  const formatDate = (date: Date) =>
+    date.toISOString().replace("T", " ").substring(0, 19);
+
   const mockHistory = [
     {
-      date: new Date().toISOString().replace("T", " ").substring(0, 19),
-      desc: "Paket diterima di gerai [JAKARTA PUSAT]",
+      date: formatDate(twoDaysAgo),
+      desc: `Paket diterima di gerai ${getCityByCourier(courier)}`,
+      location: getCityByCourier(courier),
     },
     {
-      date: new Date(Date.now() - 3600000)
-        .toISOString()
-        .replace("T", " ")
-        .substring(0, 19),
-      desc: "Paket dalam proses sortir [JAKARTA HUB]",
+      date: formatDate(yesterday),
+      desc: `Paket dalam proses sortir di hub ${getCityByCourier(courier)}`,
+      location: getCityByCourier(courier),
     },
     {
-      date: new Date(Date.now() - 7200000)
-        .toISOString()
-        .replace("T", " ")
-        .substring(0, 19),
-      desc: "Paket berangkat ke kota tujuan [BANDUNG]",
+      date: formatDate(now),
+      desc: `Paket sedang dalam perjalanan ke tujuan`,
+      location: "Dalam perjalanan",
     },
   ];
 
   return {
     status: 200,
-    message: "Success",
     data: {
       summary: {
         awb: waybill,
         courier: courier.toUpperCase(),
-        service: "REG",
+        service: "REGULAR",
         status: "ON PROCESS",
-        date: mockHistory[0].date,
-        desc: mockHistory[0].desc,
+        date: formatDate(now),
+        desc: "Paket sedang dalam proses pengiriman",
         amount: "25000",
-        weight: "1.5 kg",
+        weight: `${Math.floor(Math.random() * 5) + 1}.${Math.floor(Math.random() * 9)} kg`,
       },
       detail: {
-        origin: "JAKARTA PUSAT, DKI JAKARTA",
-        destination: "BANDUNG, JAWA BARAT",
-        shipper: "TOKO ONLINE ABC",
-        receiver: "JANE SMITH",
+        origin: `${getCityByCourier(courier)}, INDONESIA`,
+        destination: `${getRandomCity()}, INDONESIA`,
+        shipper: "TOKO ONLINE EXAMPLE",
+        receiver: "CUSTOMER EXAMPLE",
       },
       history: mockHistory,
     },
   };
+}
+
+// Helper functions
+function getCityByCourier(courier: string): string {
+  const cities: Record<string, string> = {
+    jne: "JAKARTA",
+    tiki: "SURABAYA",
+    pos: "BANDUNG",
+    jnt: "JAKARTA",
+    sicepat: "BOGOR",
+    anteraja: "JAKARTA",
+    wahana: "SEMARANG",
+    ninja: "JAKARTA",
+    lion: "JAKARTA",
+  };
+  return cities[courier.toLowerCase()] || "JAKARTA";
+}
+
+function getRandomCity(): string {
+  const cities = [
+    "BANDUNG",
+    "SURABAYA",
+    "SEMARANG",
+    "YOGYAKARTA",
+    "MALANG",
+    "DENPASAR",
+    "MAKASSAR",
+  ];
+  return cities[Math.floor(Math.random() * cities.length)];
 }
