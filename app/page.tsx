@@ -16,7 +16,6 @@ import Image from "next/image";
 import { ALL_COURIERS } from "@/data/couriers";
 
 export default function Home() {
-  // Filter untuk 23 kurir utama (sesuai dengan array yang ada di halaman)
   const popularCouriers = [
     "JNE",
     "TIKI",
@@ -33,7 +32,6 @@ export default function Home() {
     "JET",
     "PCP",
     "JX",
-    "Shopee",
     "KGX",
     "SAP",
     "RPX",
@@ -65,7 +63,7 @@ export default function Home() {
               <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-50 to-orange-50 border border-blue-200 rounded-full px-4 py-2 mb-8 shadow-sm">
                 <div className="w-2 h-2 bg-gradient-to-r from-blue-600 to-orange-400 rounded-full animate-pulse"></div>
                 <span className="text-sm font-medium text-gray-700">
-                  🎉 Mendukung 25+ kurir pengiriman
+                  🎉 Mendukung 15+ kurir pengiriman
                 </span>
               </div>
 
@@ -174,28 +172,6 @@ export default function Home() {
                   </div>
                 </div>
               ))}
-            </div>
-
-            {/* Stats */}
-            <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="p-6 rounded-2xl bg-gradient-to-br from-blue-500/10 to-transparent border border-blue-200">
-                <div className="text-3xl font-bold text-blue-600 mb-2">
-                  {displayedCouriers.length}+
-                </div>
-                <p className="text-gray-700">Kurir Didukung</p>
-              </div>
-              <div className="p-6 rounded-2xl bg-gradient-to-br from-orange-500/10 to-transparent border border-orange-200">
-                <div className="text-3xl font-bold text-orange-600 mb-2">
-                  24/7
-                </div>
-                <p className="text-gray-700">Update Data</p>
-              </div>
-              <div className="p-6 rounded-2xl bg-gradient-to-br from-blue-500/10 to-orange-500/10 border border-blue-200">
-                <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent mb-2">
-                  100%
-                </div>
-                <p className="text-gray-700">Gratis Digunakan</p>
-              </div>
             </div>
           </div>
         </section>

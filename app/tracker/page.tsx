@@ -123,7 +123,7 @@ export default function TrackerPage() {
   };
 
   // Total kurir yang didukung
-  const totalCouriers = 25;
+  const totalCouriers = 15;
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-white via-blue-50/30 to-white">

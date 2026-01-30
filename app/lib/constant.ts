@@ -120,8 +120,8 @@ export const ALL_COURIERS = [
     phone: "021-2967-8900",
   },
   {
-    code: "shopeexpress",
-    name: "Shopee Express",
+    code: "spx",
+    name: "SPX",
     icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Shopee.svg/320px-Shopee.svg.png",
     website: "https://shopee.co.id",
     color: "bg-orange-100 border-orange-300",
@@ -231,7 +231,7 @@ export const COURIER_CATEGORIES = [
   {
     name: "E-commerce",
     icon: "🛒",
-    codes: ["shopeexpress", "lazada"],
+    codes: ["spx", "lazada"],
   },
   {
     name: "Cargo",

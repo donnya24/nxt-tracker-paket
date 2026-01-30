@@ -4,7 +4,7 @@ import { Package, MapPin, Shield, TrendingUp } from "lucide-react";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-  const totalCouriers = 25;
+  const totalCouriers = 15;
 
   const features = [
     { icon: <Package size={20} />, text: "Pelacakan Real-time" },
@@ -147,8 +147,7 @@ export default function Footer() {
             Semua hak dilindungi.
           </p>
           <p className="text-xs text-gray-500 mt-2">
-            Pelacakan Realtime • Terintegrasi dengan sistem
-            kurir terpercaya
+            Pelacakan Realtime • Terintegrasi dengan sistem kurir terpercaya
           </p>
         </div>
       </div>
